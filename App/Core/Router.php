@@ -2,20 +2,15 @@
 
 class Router
 {
-	public function find_route()
+	public static function find_route($uri)
 	{
-		$uri = $_SERVER["REQUEST_URI"];
-		$uri = trim("/", $uri);
-		$uri = explode("/", $uri);
-
-		$controller = $uri[0];
-		$redirected = $_SESSION["redir"];
-		if($controller == null && $redirected)
+		if($uri[0] === "")
 		{
-			header("Location: /messenger");
-			$_SESSION["redir"] = true;
+			$_SERVER["REQUEST_URI"] = "/messenger";
+			header("Location: /messenger", true, 303);
 			exit;
 		}
+		$controller = $uri[0];
 
 		$controller[0] = strtoupper($controller[0]);
 		$controller .= "Controller";
