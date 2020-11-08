@@ -2,7 +2,7 @@
 
 class Router
 {
-	public static function find_route($uri)
+	public static function findRoute($uri)
 	{
 		if($uri[0] === "")
 		{
