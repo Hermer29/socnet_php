@@ -1,9 +1,10 @@
 <?php
 class PREFAB
 {
-    public static $AUTHENTICATION = "AUTHENTICATION";
-    public static $SIMPLE_TEXT = "SIMPLE_TEXT";
+    public const AUTHENTICATION = "AUTHENTICATION";
+    public const SIMPLE_TEXT = "SIMPLE_TEXT";
 }
+
 class DbOperations
 {
     private $pdo_connection;
@@ -47,6 +48,28 @@ class DbOperations
         array_push(self::$connected_table, new Table($table_name, $res_column_list));
     }
 
+    public function getData(string $table, array $fields) : array
+    {
+        
+        $elem = array_search($table,self::$connected_tables, $strict = true);
+        if(elem instanceof Table)
+        {
+            for($i = 0; i < count($fields); $i++, $field = array_pop($fields))
+            {
+                $field = array_search($field, $elem -> getFields(), $strict = true);
+                if($field != false)
+                {
+                    $statement = "SELECT $field FROM ". $elem -> getName();
+                }
+                else
+                {
+                    $reasulting_array[] = "Didn't find field ".$elem;
+                    continue;
+                }
+            }
+        }  
+    }
+
     private function createFieldList(string $creation_pattern) : string
     {
         switch ($creation_pattern)
@@ -73,8 +96,12 @@ class Table
         $this -> table_name = $table_name;
         $this -> fields = $fields; 
     }
-    public function getTableName() : string
+    public function getName() : string
     {
         return $this -> table_name;
     }
+    public function getFields() : array
+    {
+        return $this -> fields;
+    }    
 }
