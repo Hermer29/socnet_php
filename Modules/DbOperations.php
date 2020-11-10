@@ -1,27 +1,66 @@
 <?php
-
+class PREFAB
+{
+    public static $AUTHENTICATION = "AUTHENTICATION";
+    public static $SIMPLE_TEXT = "SIMPLE_TEXT";
+}
 class DbOperations
 {
     private $pdo_connection;
-    private static $connected_tables;
+    private static $connected_tables = [];
 
     public function __construct(string $db_name = "main")
     {
-        $this -> pdo_connection = new PDO("sqlite:".$dbname);
+        self::$pdo_connection = new PDO("sqlite:".$dbname);
     }
 
-    public function connectTable(string $table_name)
+    public function connectTable(string $table_name = "main", ?string $creation_pattern) : Table
     {
-        try {
+        try 
+        {
             $statement = "SELECT TOP 1 FROM ".$table_name;
+            self::$pdo_connection -> query($statement) -> fetch();
         } 
-        catch (PDOException $e) {
-            if($e -> getMessage() == "Base table or view not found")
+        catch (PDOException $e) 
+        {
+            if($e -> getMessage() == "Base table or view not found" || !$creation_pattern == null)
             {
-                $statement = "CREATE TABLE ".$table_name
+                $statement = "CREATE TABLE ". $table_name .getFieldList($creation_pattern);
+                self::$pdo_connection -> query($statement) -> execute();
+            }
+            else if($creation_pattern == null)
+            {
+                throw new Exception("If table doesn't exist creation pattern must be given in method");
+            }
+            else
+            {
+                throw $e;
             }
         }
-        $self -> pdo_connection -> query
+        $statement = "select * from pragma_table_info('$table_name')";
+        $column_list = self::$pdo_connection -> query($statement) -> fetchAll(PDO::FETCH_ASSOC);
+        for($i = 0; i < count($column_list); $i++)
+        {
+            array_push($res_column_list, $column_list[i]);
+        }
+
+        array_push(self::$connected_table, new Table($table_name, $res_column_list));
+    }
+
+    private function createFieldList(string $creation_pattern) : string
+    {
+        switch ($creation_pattern)
+        {
+            case "AUTHENTICATION":
+                $field_list = "(id INTEGER PRIMARY KEY AUTOINCREMENT, username VARCHAR(30), password TEXT)";
+                break;
+            case "SIMPLE_TEXT":
+                $field_list = "(id INTEGER PRIMARY KEY AUTOINCREMENT, info TEXT)";
+                break;
+            default:
+                throw new Exception("Incorrect given string in getFieldList");
+        }
+        return $field_list;
     }
 }
 
@@ -33,5 +72,9 @@ class Table
     {
         $this -> table_name = $table_name;
         $this -> fields = $fields; 
+    }
+    public function getTableName() : string
+    {
+        return $this -> table_name;
     }
 }
