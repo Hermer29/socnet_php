@@ -42,10 +42,10 @@ class DbOperations
         $column_list = self::$pdo_connection -> query($statement) -> fetchAll(PDO::FETCH_ASSOC);
         for($i = 0; i < count($column_list); $i++)
         {
-            array_push($res_column_list, $column_list[i]);
+            $res_column_list[] = $column_list[i];
         }
 
-        array_push(self::$connected_table, new Table($table_name, $res_column_list));
+        self::$connected_table[] = new Table($table_name, $res_column_list);
     }
 
     public function getData(string $table, array $fields) : array
@@ -105,3 +105,4 @@ class Table
         return $this -> fields;
     }    
 }
+

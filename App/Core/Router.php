@@ -7,14 +7,9 @@ class Router
 		get controller instance and execute 
 		specified controller method/action
 	*/
-	public static function findRoute(string $uri) : void
+	public static function findRoute(array $uri) : void
 	{
-		if($uri[0] === "")
-		{
-			$_SERVER["REQUEST_URI"] = "/messenger";
-			header("Location: /messenger", true, 303);
-			exit;
-		}
+		
 		$controller = $uri[0];
 
 		$controller_inst = Pathfinder::findController($controller);

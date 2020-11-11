@@ -6,6 +6,6 @@ abstract class Model
 	
 	public function __construct()
 	{
-		Model::$pdo = new PDO("sqlite:main.db.sqlite");
+		Model::$pdo = new PDO("sqlite:main");
 	}
 }
