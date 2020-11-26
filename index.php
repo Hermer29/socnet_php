@@ -1,4 +1,8 @@
 <?php
-include('App/Core/App.php');
+session_start();
+include "./classes/Router.php";
 
-$instance = new App();
+use Hermer29\Core\Router;
+
+$pathfinder = new Router();
+$pathfinder -> execute();
