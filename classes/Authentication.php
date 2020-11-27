@@ -15,7 +15,7 @@ class Authentication extends ModelSystem
 		];
 		try
 		{
-			$query = $this -> pdo -> prepare(self::STATEMENT_LIST[$statement]);
+			$query = $this -> pdo -> prepare($statement_list[$statement]);
 		}
 		catch(OutOfBoundsException $ex)
 		{
